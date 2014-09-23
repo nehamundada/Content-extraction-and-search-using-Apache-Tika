@@ -18,10 +18,12 @@ public class Main {
 		Parser parser = new HelloParser();
 		
 		try {
-			InputStream input = new FileInputStream("sample.html");
+//			InputStream input = new FileInputStream("sample.html");
+			InputStream input = new FileInputStream("sample.tsv");
 	        ContentHandler handler = new BodyContentHandler();
 	        Metadata metadata = new Metadata();
-	        new HtmlParser().parse(input, handler, metadata, new ParseContext());
+//	        new HtmlParser().parse(input, handler, metadata, new ParseContext());
+	        new TSVParser().parse(input, handler, metadata, new ParseContext());
 	        String plainText = handler.toString();
 	        
 	        System.out.println(plainText);

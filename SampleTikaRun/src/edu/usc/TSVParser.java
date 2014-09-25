@@ -51,7 +51,6 @@ public class TSVParser extends AbstractParser {
 		CSVReader csvReader = null;
 		try {
 			
-			
 			Charset charset = reader.getCharset();
 			MediaType type = new MediaType(MediaType.TEXT_PLAIN, charset);
 			metadata.set(Metadata.CONTENT_TYPE, type.toString());
@@ -62,19 +61,47 @@ public class TSVParser extends AbstractParser {
 					new XHTMLContentHandler(handler, metadata);
 			xhtml.startDocument();
 			xhtml.startElement("table");
-			
-			
 //			csvReader = new CSVReader(new InputStreamReader(stream), '\t');
 			csvReader = new CSVReader(reader, '\t');
 		    String [] nextLine;
+		    String [] headers = {"postedDate",
+		                        "Location",
+		                        "department",
+		                        "Title ",
+		                        "salary",
+		                        "start",
+		                        "duration",
+		                        "jobtype",
+		                        "applications",
+		                        "company",
+		                        "contactPerson",
+		                        "phoneNumber",
+		                        "faxNumber",
+		                        "Location",
+		                        "latitude",
+		                        "longitude",
+		                        "firstSeenDate",
+		                        "url",
+		                        "lastSeenDate"};
+		    xhtml.startElement("tr");
+		    for (String header : headers) {
+				xhtml.element("th", header);
+			}
+		    xhtml.endElement("tr");
+		    
 		    while ((nextLine = csvReader.readNext()) != null) {
 		        // nextLine[] is an array of values from the line
 		    	xhtml.startElement("tr");
-		    	for(String i : nextLine) {
-		    		xhtml.element("td", i);
+		    	for(int i=0; i<nextLine.length; i++) {
+		    		if(i== 4){
+			    		continue;
+			    	}
+		    		xhtml.element("td", nextLine[i]);
 		    	}
+		    	
 //		        System.out.println(nextLine[0] + nextLine[1] + "etc...");
-		    	xhtml.endElement("tr");
+		    	xhtml.endElement("tr");	    
+		    	break;
 		    }
 			xhtml.endElement("table");
 			xhtml.endDocument();

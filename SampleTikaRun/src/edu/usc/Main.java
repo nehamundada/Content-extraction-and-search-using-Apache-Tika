@@ -19,8 +19,8 @@ public class Main {
 		
 		try {
 //			InputStream input = new FileInputStream("sample.html");
-			InputStream input = new FileInputStream("sample.tsv");
-	        ContentHandler handler = new BodyContentHandler();
+			InputStream input = new FileInputStream("computrabajo-ar-20121106.tsv");
+	        ContentHandler handler = new BodyContentHandler(-1);
 	        Metadata metadata = new Metadata();
 //	        new HtmlParser().parse(input, handler, metadata, new ParseContext());
 	        new TSVParser().parse(input, handler, metadata, new ParseContext());

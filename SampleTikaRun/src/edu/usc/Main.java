@@ -20,7 +20,7 @@ public class Main {
  	        File f = new File("F:/COURSES/Sem3/CSCI_572_Information Retreival and Search Engines/Assignment1/Data");
  	        File files [] = f.listFiles();
  	      
- 	        for (int i=0;i<100;i++) {
+ 	        for (int i=0;i<files.length;i++) {
  	        	 File file = files[i];
  	        	 InputStream input = new FileInputStream(file.getAbsolutePath());
  	        	 parser.setFilename(file.getName());

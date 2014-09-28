@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/tika-app-1.6.jar" sourcepath="C:/Users/SAURABH/Desktop/tika-1.6-src.zip"/>
+	<classpathentry kind="lib" path="lib/tika-app-1.6.jar" sourcepath="/Users/shri/devel/cs572/code/tika-1.6"/>
 	<classpathentry kind="lib" path="lib/opencsv-3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

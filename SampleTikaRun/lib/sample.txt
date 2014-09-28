@@ -1,0 +1,1 @@
+Copy the tika jar in this folder

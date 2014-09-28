@@ -27,7 +27,7 @@ public class TSVParser extends AbstractParser {
 	private static final Set<MediaType> SUPPORTED_TYPES = Collections.singleton(MediaType.application("tsv"));
 	private static final String APPLICATION_MIME_TYPE = "application/tsv";
 
-	private static final String OUTPUT_DIRECTORY = "F:/COURSES/Sem3/CSCI_572_Information Retreival and Search Engines/Assignment1/JSON";
+	private static final String OUTPUT_DIRECTORY = "F:/COURSES/Sem3/CSCI_572_Information Retreival and Search Engines/Assignment1/JSONDATA";
 
 	private static final long serialVersionUID = -6656102320836888910L;
 
@@ -58,7 +58,7 @@ public class TSVParser extends AbstractParser {
 			String fileNameOnly = filename.substring(0, filename.length()-4);
 			String folderName = OUTPUT_DIRECTORY+"/"+fileNameOnly;
 			new File(folderName).mkdir();
-			
+
 			metadata.set(Metadata.CONTENT_TYPE, APPLICATION_MIME_TYPE );
 			metadata.set(Metadata.CONTENT_ENCODING, reader.getEncoding() );
 
@@ -82,11 +82,12 @@ public class TSVParser extends AbstractParser {
 					xhtml.element(headers[i], nextLine[i]);
 				}
 				xhtml.endDocument();
-				
+
 				String outputFileName = fileNameOnly +"_"+ count+".json";
+				 //System.out.println(handler.toString());
 				//System.out.println(outputFileName);
-				
- 				File file = new File(folderName+"/"+outputFileName);
+
+				File file = new File(folderName+"/"+outputFileName);
 				BufferedWriter output = new BufferedWriter(new FileWriter(file));
 				output.write(handler.toString());
 				output.close();

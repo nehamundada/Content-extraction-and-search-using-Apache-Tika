@@ -9,6 +9,8 @@ import org.xml.sax.ContentHandler;
  
 public class Main {
 	
+	final static String DATA_DIRECTORY = "F:/COURSES/Sem3/CSCI_572_Information Retreival and Search Engines/Assignment1/Data";
+	
 	public static void main(String args[]) {
  		
 		try {
@@ -17,7 +19,7 @@ public class Main {
 	        Metadata metadata = new Metadata();
  	        TSVParser parser = new TSVParser();
  	       
- 	        File f = new File("F:/COURSES/Sem3/CSCI_572_Information Retreival and Search Engines/Assignment1/Data");
+ 	        File f = new File(DATA_DIRECTORY);
  	        File files [] = f.listFiles();
  	      
  	        for (int i=0;i<files.length;i++) {

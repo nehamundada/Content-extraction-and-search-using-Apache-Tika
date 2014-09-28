@@ -12,15 +12,23 @@ import org.xml.sax.SAXException;
 public class JSONTableContentHandler extends ContentHandlerDecorator {
 
 	final List <String> skipList = new ArrayList<String>( Arrays.asList("html", "head", "meta", "title", "body") );
+
+	final List uniqueList = new ArrayList<String> ( Arrays.asList("Location", "department", "duration" , "Title", "jobtype", "company"));
+
+	final List  <String>  hash= new ArrayList();
+	
 	String elementName = "";
 
 	JSONObject json = null;
-	
+
+	String uniqueString = "";
+
 	public JSONTableContentHandler() {
 	}
 
 	public void startDocument() throws SAXException {
-		  json = new JSONObject();
+		json = new JSONObject();
+		uniqueString = "";
 	}
 
 	public void endDocument() throws SAXException {
@@ -33,6 +41,9 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 				e.printStackTrace();
 			}
 		}
+		if( uniqueList.contains("elementName") ){
+			uniqueString = uniqueString + new String(ch) ;
+		}
 	}
 
 	public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {
@@ -41,7 +52,7 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 		}
 	}
 	public void endElement(String uri, String localName, String name) throws SAXException {
- 	}
+	}
 	public String toString() {
 		return json.toString();
 	}

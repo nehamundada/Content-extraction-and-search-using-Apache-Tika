@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.tika.exception.TikaException;
@@ -30,6 +32,9 @@ public class TSVParser extends AbstractParser {
 	private static final String OUTPUT_DIRECTORY = "F:/COURSES/Sem3/CSCI_572_Information Retreival and Search Engines/Assignment1/JSONDATA";
 
 	private static final long serialVersionUID = -6656102320836888910L;
+
+	Map <Integer,Integer> map = new HashMap <Integer,Integer>();
+
 
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
@@ -83,8 +88,10 @@ public class TSVParser extends AbstractParser {
 				}
 				xhtml.endDocument();
 
+			//	JSONTableContentHandler newHandler = (JSONTableContentHandler) handler;
+
 				String outputFileName = fileNameOnly +"_"+ count+".json";
-				 //System.out.println(handler.toString());
+				//System.out.println(handler.toString());
 				//System.out.println(outputFileName);
 
 				File file = new File(folderName+"/"+outputFileName);
@@ -92,7 +99,13 @@ public class TSVParser extends AbstractParser {
 				output.write(handler.toString());
 				output.close();
 				count ++;
-			}
+ 			}
+			
+			File file = new File(folderName+"/count.txt");
+			BufferedWriter output = new BufferedWriter(new FileWriter(file));
+			output.write(  String.valueOf(count-1) );
+			output.close();
+			
 		} finally {
 			csvReader.close();
 		}

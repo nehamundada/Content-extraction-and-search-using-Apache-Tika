@@ -22,7 +22,7 @@ public class Main {
  	        File f = new File(DATA_DIRECTORY);
  	        File files [] = f.listFiles();
  	      
- 	        for (int i=0;i<files.length;i++) {
+ 	        for (int i=400;i<430;i++) {
  	        	 File file = files[i];
  	        	 InputStream input = new FileInputStream(file.getAbsolutePath());
  	        	 parser.setFilename(file.getName());

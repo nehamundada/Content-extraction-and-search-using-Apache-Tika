@@ -2,7 +2,9 @@ package edu.usc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.tika.sax.ContentHandlerDecorator;
 import org.json.JSONObject;
@@ -13,25 +15,24 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 
 	final List <String> skipList = new ArrayList<String>( Arrays.asList("html", "head", "meta", "title", "body") );
 
-	final List uniqueList = new ArrayList<String> ( Arrays.asList("Location", "department", "duration" , "Title", "jobtype", "company"));
+	//final List uniqueList = new ArrayList<String> ( Arrays.asList("Location", "department", "duration" , "Title", "jobtype", "company"));
 
-	final List  <String>  hash= new ArrayList();
-	
 	String elementName = "";
 
 	JSONObject json = null;
 
-	String uniqueString = "";
+	public StringBuffer uniqueString = null;
 
 	public JSONTableContentHandler() {
 	}
 
 	public void startDocument() throws SAXException {
 		json = new JSONObject();
-		uniqueString = "";
+		uniqueString = new StringBuffer();
 	}
 
 	public void endDocument() throws SAXException {
+		//uniqueString = uniqueString.toLowerCase();
 	}
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if(ch.length > 0 && !skipList.contains(ch)){
@@ -41,9 +42,9 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 				e.printStackTrace();
 			}
 		}
-		if( uniqueList.contains("elementName") ){
-			uniqueString = uniqueString + new String(ch) ;
-		}
+		/*if( uniqueList.contains(elementName) ){
+			uniqueString = uniqueString.append(ch) ;
+		}*/
 	}
 
 	public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {

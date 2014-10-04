@@ -8,6 +8,7 @@ import json
 import threading
 import subprocess
 
+
 logFile = open('etlRun.txt', 'wb')
 
 
@@ -53,7 +54,7 @@ def run_cmd(cmd):
 
 headerFilePath = 'headers2.txt'
 encodingFilePath = '/Users/shri/devel/cs572/sample/etllib/etl/encoding.txt'
-dataFilesPath = '/Volumes/SHRI/Data/'
+dataFilesPath = '/Volumes/Storage/employment/'
 # dataFilesPath = '/Users/shri/Desktop/computrabajo-co-20121204/'
 outDataFilesPath = '/Users/shri/Desktop/'
 
@@ -61,15 +62,15 @@ outDataFilesPath = '/Users/shri/Desktop/'
 
 
 perFileCount = 0
-
+urls = {}
 
 # os.chdir(dataFilesPath)
 count = 0
 
 for filename in os.listdir(dataFilesPath):
 
-	if filename[:-4] != '.tsv':
-		continue
+	# if filename[:4] != '.tsv':
+	# 	continue
 	try:
 
 		outPath = outDataFilesPath + filename[:-4]

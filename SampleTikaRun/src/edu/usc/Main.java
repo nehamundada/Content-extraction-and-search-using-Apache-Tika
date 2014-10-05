@@ -19,7 +19,6 @@ public class Main {
 	
 	public static void main(String args[]) {
 
-//		dedup();
 		runParser(true, false);
 	}
 
@@ -42,22 +41,6 @@ public class Main {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-
-	private static void dedup() {
-		ContentHandler handler = new JSONTableContentHandler();
-		Metadata metadata = new Metadata();
-		TSVParserDeduplication parser = new TSVParserDeduplication();
-		try {
-			InputStream input = new FileInputStream("output_4GB.tsv");
-			parser.setFilename("output_4GB.tsv");
-			parser.setFilePath("./");
-			parser.parse(input, handler, metadata, new ParseContext());
-		} catch(Exception e ) {
 			e.printStackTrace();
 		}
 

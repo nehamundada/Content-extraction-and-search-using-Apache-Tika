@@ -37,8 +37,8 @@ public class TSVParser extends AbstractParser {
 	private boolean generateJSON = false;
 	private boolean enableDeDup = false;
 	
-//	Map <Integer,Integer> map = new HashMap <Integer,Integer>();
-	Map <String,Integer> map = new HashMap <String,Integer>();
+	Map <Integer,Integer> map = new HashMap <Integer,Integer>();
+//	Map <String,Integer> map = new HashMap <String,Integer>();
 	
 	/**
 	 * @param outputDir
@@ -100,7 +100,7 @@ public class TSVParser extends AbstractParser {
 					"postedDate", "Location", "department", "Title ", "", "salary",  "start", "duration", "jobtype", "applications", "company",
 					"contactPerson", "phoneNumber", "faxNumber", "Location", "latitude", "longitude", "firstSeenDate", "url", "lastSeenDate"  
 			};
-			int count = 1;
+			int count = 0;
 			int deDup = 0;
 			int uniqCount = 0;
 			while ((nextLine = csvReader.readNext()) != null) {
@@ -122,23 +122,24 @@ public class TSVParser extends AbstractParser {
 				// if deduplication is enabled, we check the map for unique hashCode
 				boolean isUniqRow = true;
 				if(this.enableDeDup) {
-					String hsh = byteArrayToHexString(md.digest(newHandler.uniqueString.toString().getBytes()));
+//					String hsh = byteArrayToHexString(md.digest(newHandler.uniqueString.toString().getBytes()));
 //					System.out.println(newHandler.uniqueString.toString());
-					if( map.containsKey(hsh)){
-						isUniqRow = false;
-						deDup++;
-					} else {
-						map.put(hsh , 1 );
-						uniqCount++;
-					}
-							
-//					if( map.containsKey( newHandler.uniqueString.toString().hashCode() )){
+					
+//					if( map.containsKey(hsh)){
 //						isUniqRow = false;
 //						deDup++;
 //					} else {
-//						map.put( newHandler.uniqueString.toString().hashCode() , 1 );
+//						map.put(hsh , 1 );
 //						uniqCount++;
 //					}
+							
+					if( map.containsKey( newHandler.uniqueString.toString().hashCode() )){
+						isUniqRow = false;
+						deDup++;
+					} else {
+						map.put( newHandler.uniqueString.toString().hashCode() , 1 );
+						uniqCount++;
+					}
 				}
 				if(isUniqRow) {
 					

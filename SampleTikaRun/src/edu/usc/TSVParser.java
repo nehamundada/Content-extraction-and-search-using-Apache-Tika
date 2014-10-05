@@ -29,13 +29,29 @@ public class TSVParser extends AbstractParser {
 	private static final Set<MediaType> SUPPORTED_TYPES = Collections.singleton(MediaType.application("tsv"));
 	private static final String APPLICATION_MIME_TYPE = "application/tsv";
 
-	private static final String OUTPUT_DIRECTORY = "F:/COURSES/Sem3/CSCI_572_Information Retreival and Search Engines/Assignment1/JSONDATA";
+	private static String OUTPUT_DIRECTORY;
 
 	private static final long serialVersionUID = -6656102320836888910L;
+	
+	private boolean generateJSON = false;
 
 	Map <Integer,Integer> map = new HashMap <Integer,Integer>();
-
-
+	
+	public TSVParser(String outputDir) {
+		super();
+		OUTPUT_DIRECTORY = outputDir;
+	}
+	
+	public TSVParser() {
+		super();
+	}
+	
+	public boolean isGenerateJSON() {
+		return generateJSON;
+	}
+	public void setGenerateJSON(boolean generateJSON) {
+		this.generateJSON = generateJSON;
+	}
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
@@ -88,23 +104,26 @@ public class TSVParser extends AbstractParser {
 				}
 				xhtml.endDocument();
 
-			//	JSONTableContentHandler newHandler = (JSONTableContentHandler) handler;
-
-				String outputFileName = fileNameOnly +"_"+ count+".json";
-				//System.out.println(handler.toString());
-				//System.out.println(outputFileName);
-
-				File file = new File(folderName+"/"+outputFileName);
-				BufferedWriter output = new BufferedWriter(new FileWriter(file));
-				output.write(handler.toString());
-				output.close();
+				
+				if(this.generateJSON) {
+//					JSONTableContentHandler newHandler = (JSONTableContentHandler) handler;
+					String outputFileName = fileNameOnly +"_"+ count+".json";
+					System.out.println(handler.toString());
+					System.out.println(outputFileName);
+	
+					File file = new File(folderName+"/"+outputFileName);
+					BufferedWriter output = new BufferedWriter(new FileWriter(file));
+					output.write(handler.toString());
+					output.close();
+				}
 				count ++;
  			}
+			System.out.println(fileNameOnly + " : " + count);
 			
-			File file = new File(folderName+"/count.txt");
-			BufferedWriter output = new BufferedWriter(new FileWriter(file));
-			output.write(  String.valueOf(count-1) );
-			output.close();
+//			File file = new File(folderName+"/count.txt");
+//			BufferedWriter output = new BufferedWriter(new FileWriter(file));
+//			output.write(  String.valueOf(count-1) );
+//			output.close();
 			
 		} finally {
 			csvReader.close();

@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,8 @@ public class TSVParser extends AbstractParser {
 	private boolean generateJSON = false;
 	private boolean enableDeDup = false;
 	
-	Map <Integer,Integer> map = new HashMap <Integer,Integer>();
+//	Map <Integer,Integer> map = new HashMap <Integer,Integer>();
+	Map <String,Integer> map = new HashMap <String,Integer>();
 	
 	/**
 	 * @param outputDir
@@ -76,9 +78,13 @@ public class TSVParser extends AbstractParser {
 			throws IOException, SAXException, TikaException {
 
 		InputStreamReader reader = new InputStreamReader(stream);	
+		
+		
 
 		CSVReader csvReader = null;
 		try {
+			
+			MessageDigest md = MessageDigest.getInstance("SHA-1");
 
 			String fileNameOnly = filename.substring(0, filename.length()-4);
 			String folderName = OUTPUT_DIRECTORY+"/"+fileNameOnly;
@@ -95,6 +101,8 @@ public class TSVParser extends AbstractParser {
 					"contactPerson", "phoneNumber", "faxNumber", "Location", "latitude", "longitude", "firstSeenDate", "url", "lastSeenDate"  
 			};
 			int count = 1;
+			int deDup = 0;
+			int uniqCount = 0;
 			while ((nextLine = csvReader.readNext()) != null) {
 				XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
 				xhtml.startDocument();
@@ -111,15 +119,28 @@ public class TSVParser extends AbstractParser {
 				
 				JSONTableContentHandler newHandler = (JSONTableContentHandler) handler;
 				
-				boolean insertRecord = true;
+				// if deduplication is enabled, we check the map for unique hashCode
+				boolean isUniqRow = true;
 				if(this.enableDeDup) {
-					if( map.containsKey( newHandler.uniqueString.hashCode() )){
-						insertRecord = false;
+					String hsh = byteArrayToHexString(md.digest(newHandler.uniqueString.toString().getBytes()));
+//					System.out.println(newHandler.uniqueString.toString());
+					if( map.containsKey(hsh)){
+						isUniqRow = false;
+						deDup++;
 					} else {
-						map.put( newHandler.uniqueString.hashCode() , new Integer(1) );
+						map.put(hsh , 1 );
+						uniqCount++;
 					}
+							
+//					if( map.containsKey( newHandler.uniqueString.toString().hashCode() )){
+//						isUniqRow = false;
+//						deDup++;
+//					} else {
+//						map.put( newHandler.uniqueString.toString().hashCode() , 1 );
+//						uniqCount++;
+//					}
 				}
-				if(insertRecord) {
+				if(isUniqRow) {
 					
 					if(this.generateJSON) {
 						new File(folderName).mkdir();
@@ -136,16 +157,31 @@ public class TSVParser extends AbstractParser {
 				}
 				count ++;
  			}
-			System.out.println(fileNameOnly + " : " + count);
+			
+			if(this.enableDeDup) {
+				System.out.println(fileNameOnly + " : " + count + " Uniq: " + uniqCount + " Dup: " + deDup);
+			} else {
+				System.out.println(fileNameOnly + " : " + count);
+			}
 			
 //			File file = new File(folderName+"/count.txt");
 //			BufferedWriter output = new BufferedWriter(new FileWriter(file));
 //			output.write(  String.valueOf(count-1) );
 //			output.close();
 			
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			csvReader.close();
 		}
 
+	}
+	
+	private static String byteArrayToHexString(byte[] b) {
+		String result = "";
+		for (int i=0; i < b.length; i++) {
+			result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
+		}
+		return result;
 	}
 }

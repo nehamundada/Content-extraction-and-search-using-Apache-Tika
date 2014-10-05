@@ -43,7 +43,7 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 			}
 		}
 		if( uniqueList.contains(elementName) ){
-			uniqueString = uniqueString.append(ch.toString().toLowerCase()) ;
+			uniqueString.append(new String(ch).toLowerCase()) ;
 		}
 	}
 

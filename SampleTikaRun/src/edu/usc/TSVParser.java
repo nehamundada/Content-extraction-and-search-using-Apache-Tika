@@ -34,24 +34,28 @@ public class TSVParser extends AbstractParser {
 	private static final long serialVersionUID = -6656102320836888910L;
 	
 	private boolean generateJSON = false;
-
+	private boolean enableDeDup = false;
+	
 	Map <Integer,Integer> map = new HashMap <Integer,Integer>();
 	
-	public TSVParser(String outputDir) {
+	/**
+	 * @param outputDir
+	 * @param isJSON
+	 * @param fName
+	 * @param fPath
+	 * 
+	 * */
+	public TSVParser(String outputDir, boolean isJSON, boolean deDup) {
 		super();
 		OUTPUT_DIRECTORY = outputDir;
+		this.generateJSON = isJSON;
+		this.enableDeDup = deDup;
 	}
 	
 	public TSVParser() {
 		super();
 	}
 	
-	public boolean isGenerateJSON() {
-		return generateJSON;
-	}
-	public void setGenerateJSON(boolean generateJSON) {
-		this.generateJSON = generateJSON;
-	}
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
@@ -78,7 +82,7 @@ public class TSVParser extends AbstractParser {
 
 			String fileNameOnly = filename.substring(0, filename.length()-4);
 			String folderName = OUTPUT_DIRECTORY+"/"+fileNameOnly;
-			new File(folderName).mkdir();
+//			new File(folderName).mkdir();
 
 			metadata.set(Metadata.CONTENT_TYPE, APPLICATION_MIME_TYPE );
 			metadata.set(Metadata.CONTENT_ENCODING, reader.getEncoding() );
@@ -105,16 +109,30 @@ public class TSVParser extends AbstractParser {
 				xhtml.endDocument();
 
 				
-				if(this.generateJSON) {
-//					JSONTableContentHandler newHandler = (JSONTableContentHandler) handler;
-					String outputFileName = fileNameOnly +"_"+ count+".json";
-					System.out.println(handler.toString());
-					System.out.println(outputFileName);
+				JSONTableContentHandler newHandler = (JSONTableContentHandler) handler;
+				
+				boolean insertRecord = true;
+				if(this.enableDeDup) {
+					if( map.containsKey( newHandler.uniqueString.hashCode() )){
+						insertRecord = false;
+					} else {
+						map.put( newHandler.uniqueString.hashCode() , new Integer(1) );
+					}
+				}
+				if(insertRecord) {
+					
+					if(this.generateJSON) {
+						new File(folderName).mkdir();
+						
+						String outputFileName = fileNameOnly +"_"+ count+".json";
+						System.out.println(handler.toString());
+						System.out.println(outputFileName);
 	
-					File file = new File(folderName+"/"+outputFileName);
-					BufferedWriter output = new BufferedWriter(new FileWriter(file));
-					output.write(handler.toString());
-					output.close();
+						File file = new File(folderName+"/"+outputFileName);
+						BufferedWriter output = new BufferedWriter(new FileWriter(file));
+						output.write(handler.toString());
+						output.close();
+					}
 				}
 				count ++;
  			}

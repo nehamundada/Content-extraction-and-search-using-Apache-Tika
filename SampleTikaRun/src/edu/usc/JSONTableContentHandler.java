@@ -15,7 +15,7 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 
 	final List <String> skipList = new ArrayList<String>( Arrays.asList("html", "head", "meta", "title", "body") );
 
-	//final List uniqueList = new ArrayList<String> ( Arrays.asList("Location", "department", "duration" , "Title", "jobtype", "company"));
+	final List uniqueList = new ArrayList<String> ( Arrays.asList("Location", "department", "duration" , "Title", "jobtype", "company"));
 
 	String elementName = "";
 
@@ -32,7 +32,7 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 	}
 
 	public void endDocument() throws SAXException {
-		//uniqueString = uniqueString.toLowerCase();
+//		uniqueString = uniqueString.toLowerCase();
 	}
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if(ch.length > 0 && !skipList.contains(ch)){
@@ -42,9 +42,9 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 				e.printStackTrace();
 			}
 		}
-		/*if( uniqueList.contains(elementName) ){
-			uniqueString = uniqueString.append(ch) ;
-		}*/
+		if( uniqueList.contains(elementName) ){
+			uniqueString = uniqueString.append(ch.toString().toLowerCase()) ;
+		}
 	}
 
 	public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {

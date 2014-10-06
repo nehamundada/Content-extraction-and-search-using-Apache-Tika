@@ -74,7 +74,7 @@ public class TSVParser extends AbstractParser {
 		return SUPPORTED_TYPES;
 	}
 
-	public void parse( InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
+	synchronized public void parse( InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
 			throws IOException, SAXException, TikaException {
 
 		InputStreamReader reader = new InputStreamReader(stream);	
@@ -84,8 +84,7 @@ public class TSVParser extends AbstractParser {
 		CSVReader csvReader = null;
 		try {
 			
-			MessageDigest md = MessageDigest.getInstance("SHA-1");
-
+ 
 			String fileNameOnly = filename.substring(0, filename.length()-4);
 			String folderName = OUTPUT_DIRECTORY+"/"+fileNameOnly;
 //			new File(folderName).mkdir();
@@ -108,10 +107,10 @@ public class TSVParser extends AbstractParser {
 				xhtml.startDocument();
 
 				// nextLine[] is an array of values from the line
-				for(int i=0; i<3; i++) {
+				for(int i=0; i<4; i++) {
 					xhtml.element(headers[i], nextLine[i]);
 				}
-				for(int i=3; i<nextLine.length; i++) {
+				for(int i=5; i<nextLine.length; i++) {
 					xhtml.element(headers[i], nextLine[i]);
 				}
 				xhtml.endDocument();
@@ -122,22 +121,15 @@ public class TSVParser extends AbstractParser {
 				// if deduplication is enabled, we check the map for unique hashCode
 				boolean isUniqRow = true;
 				if(this.enableDeDup) {
-//					String hsh = byteArrayToHexString(md.digest(newHandler.uniqueString.toString().getBytes()));
 //					System.out.println(newHandler.uniqueString.toString());
-					
-//					if( map.containsKey(hsh)){
-//						isUniqRow = false;
-//						deDup++;
-//					} else {
-//						map.put(hsh , 1 );
-//						uniqCount++;
-//					}
 							
-					if( map.containsKey( newHandler.uniqueString.toString().hashCode() )){
+//					if( map.containsKey( newHandler.uniqueString.toString().hashCode() )){
+					if( map.containsKey( newHandler.returnString.hashCode() )){
 						isUniqRow = false;
 						deDup++;
 					} else {
-						map.put( newHandler.uniqueString.toString().hashCode() , 1 );
+//						map.put( newHandler.uniqueString.toString().hashCode() , 1 );
+						map.put( newHandler.returnString.hashCode() , 1 );
 						uniqCount++;
 					}
 				}
@@ -160,10 +152,13 @@ public class TSVParser extends AbstractParser {
  			}
 			
 			if(this.enableDeDup) {
-				System.out.println(fileNameOnly + " : " + count + " Uniq: " + uniqCount + " Dup: " + deDup);
+//				System.out.println(fileNameOnly + " : " + count + " Uniq: " + uniqCount + " Dup: " + deDup);
+				System.out.println(fileNameOnly + "\t" + count + "\tUniq: " + uniqCount + "\tDup: " + deDup);
 			} else {
 				System.out.println(fileNameOnly + " : " + count);
 			}
+			
+			System.out.println("len : " + map.size());
 			
 //			File file = new File(folderName+"/count.txt");
 //			BufferedWriter output = new BufferedWriter(new FileWriter(file));

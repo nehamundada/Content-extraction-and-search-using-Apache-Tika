@@ -1,28 +1,49 @@
 package edu.usc;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.InputStream;
-import java.io.PrintWriter;
-  
+import java.util.Properties;
+
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.xml.sax.ContentHandler;
 
  
 public class Main {
-
-	final static String DATA_DIRECTORY = "/Volumes/SHRI/Data";
-	//final static String DATA_DIRECTORY = "F:/COURSES/Sem3/CSCI_572_Information Retreival and Search Engines/Assignment1/employment/";
 	
-	final static String OUTPUT_DIRECTORY = "";
+	private static Properties prop = new Properties();
 	
+	private enum PropKeys {
+		generateJSON,
+		enableDeDup,
+		inputDataDir,
+		outputDataDir
+	}
+	
+	public Main() {
+		try {
+			File file = new File("App.properties");
+			FileInputStream fileInput = new FileInputStream(file);
+			prop = new Properties();
+			prop.load(fileInput);
+			fileInput.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static void main(String args[]) {
+
+		Main objMain = new Main();
+		objMain.runParser(Boolean.parseBoolean(prop.getProperty(PropKeys.enableDeDup.name())), 
+				Boolean.parseBoolean(prop.getProperty(PropKeys.generateJSON.name())));
 		
-		runParser(true, false);
+		
+		
+		
+		
 		return;
 		
 //		
@@ -70,19 +91,23 @@ public class Main {
 	
 	
 	
-	private static void runParser(boolean performDeDup, boolean createJSONFiles) {
+	/**
+	 * @param performDeDup Boolean : Whether to have deduplication or now
+	 * @param createJSONFiles Boolean: if we have to create the json files or not 
+	 */
+	private void runParser(boolean performDeDup, boolean createJSONFiles) {
 
 		try {
 			TSVParserDeduplication parser = new TSVParserDeduplication();
 			
-			parser.setOUTPUT_DIRECTORY(OUTPUT_DIRECTORY);
+			TSVParserDeduplication.setOUTPUT_DIRECTORY(prop.getProperty(PropKeys.outputDataDir.name()));
 			parser.setEnableDeDup(performDeDup);
 			parser.setGenerateJSON(createJSONFiles);
 			
 			ContentHandler handler = new JSONTableContentHandler();
 			Metadata metadata = new Metadata();
 
-			File f = new File(DATA_DIRECTORY);
+			File f = new File(prop.getProperty(PropKeys.inputDataDir.name()));
 			File files [] = f.listFiles();
 
 			System.out.println("filename\tTotal\tUniq\tDup\tMapSize");
@@ -99,5 +124,5 @@ public class Main {
 		}
 
 	}
-
+	
 }

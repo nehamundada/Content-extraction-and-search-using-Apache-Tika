@@ -22,9 +22,6 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 	public StringBuffer uniqueString = null;
 	public String returnString = "";
 	
-	public JSONTableContentHandler() {
-	}
-
 	public void startDocument() throws SAXException {
 		json = new JSONObject();
 		uniqueString = new StringBuffer();

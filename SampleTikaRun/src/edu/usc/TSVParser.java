@@ -1,14 +1,16 @@
 package edu.usc;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,40 +32,43 @@ public class TSVParser extends AbstractParser {
 	private static final Set<MediaType> SUPPORTED_TYPES = Collections.singleton(MediaType.application("tsv"));
 	private static final String APPLICATION_MIME_TYPE = "application/tsv";
 
-	private static String OUTPUT_DIRECTORY;
-
-	private static final long serialVersionUID = -6656102320836888910L;
-	
+	private static String OUTPUT_DIRECTORY = "";
 	private boolean generateJSON = false;
 	private boolean enableDeDup = false;
-	
-	Map <Integer,Integer> map = new HashMap <Integer,Integer>();
-//	Map <String,Integer> map = new HashMap <String,Integer>();
-	
-	/**
-	 * @param outputDir
-	 * @param isJSON
-	 * @param fName
-	 * @param fPath
-	 * 
-	 * */
-	public TSVParser(String outputDir, boolean isJSON, boolean deDup) {
-		super();
-		OUTPUT_DIRECTORY = outputDir;
-		this.generateJSON = isJSON;
-		this.enableDeDup = deDup;
+
+	public boolean isGenerateJSON() {
+		return generateJSON;
 	}
-	
-	public TSVParser() {
-		super();
+	public void setGenerateJSON(boolean generateJSON) {
+		this.generateJSON = generateJSON;
 	}
+	public boolean isEnableDeDup() {
+		return enableDeDup;
+	}
+	public void setEnableDeDup(boolean enableDeDup) {
+		this.enableDeDup = enableDeDup;
+	}
+	public static String getOUTPUT_DIRECTORY() {
+		return OUTPUT_DIRECTORY;
+	}
+	public static void setOUTPUT_DIRECTORY(String oUTPUT_DIRECTORY) {
+		OUTPUT_DIRECTORY = oUTPUT_DIRECTORY;
+	}
+
+	private static final long serialVersionUID = -6656102320836888910L;
+
+	public Map <Integer,Integer> map = new HashMap <Integer,Integer>();
 	
+     public int count = 0;
+	
+    List <String> writeList = new ArrayList<String>();
+    
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
 	public String getFilePath() {
 		return filePath;
-	}
+	} 
 	public String getFilename() {
 		return filename;
 	}
@@ -74,64 +79,58 @@ public class TSVParser extends AbstractParser {
 		return SUPPORTED_TYPES;
 	}
 
-	synchronized public void parse( InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
+	public void parse( InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context)
 			throws IOException, SAXException, TikaException {
 
-		InputStreamReader reader = new InputStreamReader(stream);	
-		
-		
+		BufferedReader reader = new BufferedReader( new InputStreamReader(stream));	
 
 		CSVReader csvReader = null;
+		int uniqCount = 0;
+		int dupCount = 0;
 		try {
-			
- 
+
 			String fileNameOnly = filename.substring(0, filename.length()-4);
 			String folderName = OUTPUT_DIRECTORY+"/"+fileNameOnly;
-//			new File(folderName).mkdir();
-
-			metadata.set(Metadata.CONTENT_TYPE, APPLICATION_MIME_TYPE );
-			metadata.set(Metadata.CONTENT_ENCODING, reader.getEncoding() );
 
 			csvReader = new CSVReader(reader, '\t');
-
+			 			
 			String [] nextLine;
 			String [] headers = {
-					"postedDate", "Location", "department", "Title ", "", "salary",  "start", "duration", "jobtype", "applications", "company",
+					"postedDate", "Location", "department", "Title", "", "salary",  "start", "duration", "jobtype", "applications", "company",
 					"contactPerson", "phoneNumber", "faxNumber", "Location", "latitude", "longitude", "firstSeenDate", "url", "lastSeenDate"  
 			};
-			int count = 0;
-			int deDup = 0;
-			int uniqCount = 0;
-			while ((nextLine = csvReader.readNext()) != null) {
+			
+			
+			String line = "";
+			while ((line = reader.readLine()) != null) {
+				nextLine = line.split("\t");
 				XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
 				xhtml.startDocument();
-
-				// nextLine[] is an array of values from the line
+				 count ++;
+ 				// nextLine[] is an array of values from the line
 				for(int i=0; i<4; i++) {
 					xhtml.element(headers[i], nextLine[i]);
-				}
+ 				}
 				for(int i=5; i<nextLine.length; i++) {
 					xhtml.element(headers[i], nextLine[i]);
-				}
+ 				}
 				xhtml.endDocument();
 
-				
 				JSONTableContentHandler newHandler = (JSONTableContentHandler) handler;
 				
-				// if deduplication is enabled, we check the map for unique hashCode
-				boolean isUniqRow = true;
+				boolean isUniqRow = false;
 				if(this.enableDeDup) {
-//					System.out.println(newHandler.uniqueString.toString());
-							
-//					if( map.containsKey( newHandler.uniqueString.toString().hashCode() )){
-					if( map.containsKey( newHandler.returnString.hashCode() )){
-						isUniqRow = false;
-						deDup++;
-					} else {
-//						map.put( newHandler.uniqueString.toString().hashCode() , 1 );
-						map.put( newHandler.returnString.hashCode() , 1 );
+				
+					if( !map.containsKey( newHandler.returnString.hashCode() )) {					
+						map.put( newHandler.returnString.hashCode() , new Integer(1) );
+						isUniqRow = true;
 						uniqCount++;
+ 
+						writeList.add(line);
+					} else {
+						dupCount++;
 					}
+					
 				}
 				if(isUniqRow) {
 					
@@ -148,36 +147,16 @@ public class TSVParser extends AbstractParser {
 						output.close();
 					}
 				}
-				count ++;
- 			}
-			
+			}
 			if(this.enableDeDup) {
-//				System.out.println(fileNameOnly + " : " + count + " Uniq: " + uniqCount + " Dup: " + deDup);
-				System.out.println(fileNameOnly + "\t" + count + "\tUniq: " + uniqCount + "\tDup: " + deDup);
+				System.out.println(fileNameOnly + "\t" + count + "\t" + uniqCount + "\t" + dupCount + "\t" + map.size());
 			} else {
 				System.out.println(fileNameOnly + " : " + count);
 			}
 			
-			System.out.println("len : " + map.size());
-			
-//			File file = new File(folderName+"/count.txt");
-//			BufferedWriter output = new BufferedWriter(new FileWriter(file));
-//			output.write(  String.valueOf(count-1) );
-//			output.close();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
 		} finally {
 			csvReader.close();
 		}
 
-	}
-	
-	private static String byteArrayToHexString(byte[] b) {
-		String result = "";
-		for (int i=0; i < b.length; i++) {
-			result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
-		}
-		return result;
 	}
 }

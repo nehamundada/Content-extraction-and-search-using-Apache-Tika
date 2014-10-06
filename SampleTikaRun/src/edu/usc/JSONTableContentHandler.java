@@ -2,9 +2,7 @@ package edu.usc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.tika.sax.ContentHandlerDecorator;
 import org.json.JSONObject;
@@ -22,7 +20,8 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 	JSONObject json = null;
 
 	public StringBuffer uniqueString = null;
-
+	public String returnString = "";
+	
 	public JSONTableContentHandler() {
 	}
 
@@ -32,18 +31,21 @@ public class JSONTableContentHandler extends ContentHandlerDecorator {
 	}
 
 	public void endDocument() throws SAXException {
-//		uniqueString = uniqueString.toLowerCase();
+		returnString = uniqueString.toString();//.toLowerCase();
 	}
 	public void characters(char[] ch, int start, int length) throws SAXException {
-		if(ch.length > 0 && !skipList.contains(ch)){
+		String val = new String(ch);
+		
+		if(val.length() > 0 && !skipList.contains(val)){
 			try{
-				json.put(elementName, new String(ch));
+				json.put(elementName, new String(val));
+				
+				if( uniqueList.contains(elementName) ){
+					 uniqueString.append(new String(val).toLowerCase()) ;
+				} 
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-		}
-		if( uniqueList.contains(elementName) ){
-			uniqueString.append(new String(ch).toLowerCase()) ;
 		}
 	}
 

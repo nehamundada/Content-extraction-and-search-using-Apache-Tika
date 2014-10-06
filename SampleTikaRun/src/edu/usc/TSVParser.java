@@ -102,6 +102,7 @@ public class TSVParser extends AbstractParser {
 			
 			
 			String line = "";
+			// for each row in the TSV
 			while ((line = reader.readLine()) != null) {
 				nextLine = line.split("\t");
 				XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
@@ -118,6 +119,8 @@ public class TSVParser extends AbstractParser {
 
 				JSONTableContentHandler newHandler = (JSONTableContentHandler) handler;
 				
+				
+				// if Deduplication is enabled
 				boolean isUniqRow = false;
 				if(this.enableDeDup) {
 				
@@ -134,11 +137,12 @@ public class TSVParser extends AbstractParser {
 				}
 				if(isUniqRow) {
 					
+					// if we have to generate the json file for each row
 					if(this.generateJSON) {
 						new File(folderName).mkdir();
 						
 						String outputFileName = fileNameOnly +"_"+ count+".json";
-						System.out.println(handler.toString());
+//						System.out.println(handler.toString());
 						System.out.println(outputFileName);
 	
 						File file = new File(folderName+"/"+outputFileName);

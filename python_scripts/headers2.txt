@@ -1,7 +1,7 @@
 postedDate
 Location
 department
-Title 
+Title
 unknown
 salary
 start
